@@ -1,0 +1,2 @@
+# Yuzuru
+Successor to Kaguya
