@@ -56,12 +56,17 @@ class Anime(commands.Cog):
         embed = YuzuruEmbed()
         plural = sfw_plural.get(action)
         if user:
-            description = f'{user.mention} {ctx.user.mention} {plural} you!'
+            description = f'{ctx.user.mention} {plural} you!'
         else:
             description = f'{ctx.user.mention} {plural} the air!'
 
+        embed.description = description
         embed.set_image(url=self.api.get_sfw(action))
-        await ctx.respond(description, embed=embed)
+
+        if user:
+            await ctx.respond(user.mention, embed=embed)
+        else:
+            await ctx.respond(embed=embed)
 
     @slash_command(guild_ids=[931367517564317707])
     async def nsfw(self, ctx: discord.ApplicationContext,
