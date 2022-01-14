@@ -16,17 +16,17 @@ class YuzuruBot(AutoShardedBot):
         logging.info("Welcome to Yuzuru!")
 
     async def on_interaction(self, interaction: discord.Interaction):
-        if not interaction.is_command():
-            pass
+        options = interaction.data.get('options')
+        if options is not None:
+            if 'focused' not in options[0].keys():
+                user, created = User.get_or_create(user_id=interaction.user.id)
 
-        user, created = User.get_or_create(user_id=interaction.user.id)
+                User.update({User.command_count: user.command_count + 1}) \
+                    .where(User.id == user.id) \
+                    .execute()
 
-        User.update({User.command_count: user.command_count + 1}) \
-            .where(User.id == user.id) \
-            .execute()
-
-        ch = CommandHistory(user=user, command=interaction.data.get('name'),
-                            options=interaction.data.get('options'),
-                            timestamp=datetime.utcnow())
-        ch.save()
+                ch = CommandHistory(user=user, command=interaction.data.get('name'),
+                                    options=interaction.data.get('options'),
+                                    timestamp=datetime.utcnow())
+                ch.save()
         await super().on_interaction(interaction)
