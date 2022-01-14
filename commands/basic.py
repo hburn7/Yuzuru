@@ -8,7 +8,7 @@ class Basic(commands.Cog):
 
     @slash_command(guild_ids=[931367517564317707])
     async def ping(self, ctx):
-        """Checks Yuzuru's latency"""
+        """Checks Yuzuru's latency to Discord servers"""
         await ctx.respond(f'🏓 Pong! {ctx.bot.latency * 1000:.2f}ms ')
 
 
