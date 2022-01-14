@@ -2,8 +2,9 @@ import discord
 import datetime
 import logging
 import logging.config
-from utils.logformatter import LogFormatter
 
+from commands import anime
+from utils.logformatter import LogFormatter
 from pathlib import Path
 
 
@@ -30,10 +31,8 @@ def main():
     # Configure bot
     bot = discord.AutoShardedBot()
 
-    @bot.slash_command()
-    async def hello(ctx, name: str = None):
-        name = name or ctx.author.name
-        await ctx.respond(f"Hello, {name}. I'm Yuzuru!")
+    # Register all cogs
+    anime.setup(bot)
 
     @bot.event
     async def on_ready():
