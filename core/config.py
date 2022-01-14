@@ -9,6 +9,11 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Config:
     token: str
+    postgres_username: str
+    postgres_pass: str
+    postgres_host: str
+    postgres_port: int
+    postgres_database: str
 
 
 def get_or_create_config():
@@ -21,7 +26,12 @@ def get_or_create_config():
         logging.info('Config file not found, creating.')
         # Create and return default
         config[key] = {
-            "token": "<delete and replace with bot token>"
+            "token": "<delete and replace with bot token>",
+            "postgres_username": "PostgresUsername",
+            "postgres_pass": "PostgresPassword",
+            "postgres_host": "localhost",
+            "postgres_port": 5432,
+            "postgres_database": "Yuzuru",
         }
         with open(config_path.absolute(), 'w') as conf:
             config.write(conf)
@@ -33,4 +43,5 @@ def get_or_create_config():
         # Return existing
         config.read(config_path.absolute())
         data = config[key]
-        return Config(data["token"])
+        return Config(data["token"], data["postgres_username"], data["postgres_pass"],
+                      data["postgres_host"], int(data["postgres_port"]), data["postgres_database"])
