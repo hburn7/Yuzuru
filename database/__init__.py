@@ -1,13 +1,23 @@
 import logging
-from sqlalchemy import create_engine
-from sqlalchemy_utils import database_exists, create_database
+from peewee import PostgresqlDatabase, Model
+
+from core import config
 
 
-def get_or_create_engine():
-    engine = create_engine('sqlite:///yuzuru.db')
+def get_db():
+    user = config.postgres_username
+    pw = config.postgres_pass
+    host = config.postgres_host
+    port = config.postgres_port
+    db_name = config.postgres_database
 
-    if not database_exists(engine.url):
-        create_database(engine.url)
+    psql_db = PostgresqlDatabase(f'postgresql://{user}:{pw}@{host}:{port}/{db_name}')
+    return psql_db
 
-        logging.info(f'Created new database at url {engine.url}')
-    return engine
+
+db = get_db()
+
+
+class YuzuruModel(Model):
+    class Meta:
+        database = db
