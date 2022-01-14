@@ -1,11 +1,9 @@
 import logging
 import discord
-import peewee
-from discord.ext.commands import AutoShardedBot
 
 from datetime import datetime
+from discord.ext.commands import AutoShardedBot
 
-from database import db
 from database.models.db_models import CommandHistory, User
 
 
@@ -23,9 +21,12 @@ class YuzuruBot(AutoShardedBot):
 
         user, created = User.get_or_create(user_id=interaction.user.id)
 
+        User.update({User.command_count: user.command_count + 1}) \
+            .where(User.id == user.id) \
+            .execute()
+
         ch = CommandHistory(user=user, command=interaction.data.get('name'),
                             options=interaction.data.get('options'),
                             timestamp=datetime.utcnow())
         ch.save()
         await super().on_interaction(interaction)
-
