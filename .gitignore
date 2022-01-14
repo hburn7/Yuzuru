@@ -3,6 +3,7 @@ logs/
 pycord/
 .idea/
 config.ini
+yuzuru.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -3,9 +3,11 @@ import datetime
 import logging
 import logging.config
 
+from pathlib import Path
+
+import database
 from commands import anime
 from utils.logformatter import LogFormatter
-from pathlib import Path
 
 
 def main():
@@ -27,6 +29,9 @@ def main():
     console.setLevel(logging.DEBUG)
     console.setFormatter(LogFormatter())
     logging.getLogger('').addHandler(console)
+
+    # Init DB
+    database.get_or_create_engine()
 
     # Configure bot
     bot = discord.AutoShardedBot()

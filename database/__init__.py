@@ -11,6 +11,3 @@ def get_or_create_engine():
 
         logging.info(f'Created new database at url {engine.url}')
     return engine
-
-
-engine = get_or_create_engine()
