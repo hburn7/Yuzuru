@@ -1,5 +1,6 @@
 import logging
 
+
 class LogFormatter(logging.Formatter):
     grey = "\x1b[38;2;170;170;170m"
     white = "\x1b[38;2;236;236;236m"
