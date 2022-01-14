@@ -1,2 +1,2 @@
 # Yuzuru
-Successor to Kaguya
+Successor to [Kaguya](https://github.com/kaguyabot/Kaguya)
