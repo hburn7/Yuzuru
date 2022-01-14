@@ -1,3 +1,5 @@
+import sys
+
 import discord
 import datetime
 import logging
@@ -5,9 +7,12 @@ import logging.config
 
 from pathlib import Path
 
-import database
-from commands import anime
-from utils.logformatter import LogFormatter
+from database import db
+from database.models.db_models import CommandHistory, User
+from commands import anime, basic
+from core import config
+from core.yuzuru_bot import YuzuruBot
+from utils.log_formatter import LogFormatter
 
 
 def main():
@@ -31,23 +36,26 @@ def main():
     logging.getLogger('').addHandler(console)
 
     # Init DB
-    database.get_or_create_engine()
+    try:
+        db.connect()
+        db.create_tables([CommandHistory, User])
+    except Exception as e:
+        logging.critical(f'Failed to establish a database connection.')
+        logging.info(f'Exception Info: {e}')
+        sys.exit(1)
 
     # Configure bot
-    bot = discord.AutoShardedBot()
+    bot = YuzuruBot()
 
     # Register all cogs
     anime.setup(bot)
-
-    @bot.event
-    async def on_ready():
-        logging.info("Welcome to Yuzuru!")
+    basic.setup(bot)
 
     try:
-        from core import config
         bot.run(config.token)
     except discord.LoginFailure:
         logging.critical("--- Failed to launch Yuzuru. Is your token correct? (check config.ini) ---")
+        sys.exit(1)
 
 
 if __name__ == '__main__':
