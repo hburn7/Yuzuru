@@ -12,7 +12,6 @@ class Config:
 
 
 def get_or_create_config():
-    logger.critical("This is a test of config.py")
     config_path = Path('./config.ini')
     config = ConfigParser()
 
