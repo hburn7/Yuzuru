@@ -21,13 +21,20 @@ Clone the source code into your favorite directory.
 git clone https://github.com/hburn7/Yuzuru
 ```
 
-Now, we must create the virtual environment to install packages into and our code from.
-First, upgrade pip to the latest version.
+Now, we must create the virtual environment to install packages into and our code from. This is so 
+your computer's python/pip configuration doesn't get cluttered with Yuzuru specific packages.
 
+Create and activate the virtual environment.
+```
+python3 -m venv env
+source env/bin/activate
+```
+Upgrade pip to the latest version in the virtual environment.
 ```
 python3 -m pip install --upgrade pip
 ```
-Install all project packages.
+
+Install all project packages into the virtual environment.
 ```
 pip install -r requirements.txt
 ```
@@ -42,8 +49,8 @@ python3 -m pip install -U .[voice]
 _Note: If the last step above does not work, remove the `[voice]` from the end of the command._
 
 You should now be able to run Yuzuru. Open Yuzuru in your favorite Python development environment and configure
-it to run `main.py`. You should get an error related to not having your token properly setup. If you don't
+it to run `main.py` with `env/bin/python` as the interpreter. You should get an error related to not having your token properly setup. If you don't
 see this error, check your configuration and installation. Now, grab your discord bot token from earlier and paste 
 it into the newly created `config.ini` file in the root directory. Do not surround the token with quotation marks.
 
-Yuzuru should now login. If you see a console message saying "Welcome to Yuzuru!", you're all set!
+Yuzuru should now login to Discord. If you see a console message saying "Welcome to Yuzuru!", you're all set!
