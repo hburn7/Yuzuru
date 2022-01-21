@@ -4,6 +4,7 @@ import discord
 import datetime
 import logging
 import logging.config
+import time
 
 from pathlib import Path
 
@@ -35,14 +36,16 @@ def main():
     console.setFormatter(LogFormatter())
     logging.getLogger('').addHandler(console)
 
-    # Init DB
-    try:
-        db.connect()
-        db.create_tables([CommandHistory, User])
-    except Exception as e:
-        logging.critical(f'Failed to establish a database connection.')
-        logging.info(f'Exception Info: {e}')
-        sys.exit(1)
+    # Init DB -- reconnect on failure
+    while True:
+        try:
+            db.connect()
+            db.create_tables([CommandHistory, User])
+            break
+        except Exception as e:
+            logging.critical(f'Failed to establish a database connection. Retrying...')
+            logging.debug(f'Exception info: {e}')
+            time.sleep(2)
 
     # Configure bot
     bot = YuzuruBot()
