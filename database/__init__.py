@@ -1,4 +1,3 @@
-import logging
 from peewee import PostgresqlDatabase, Model
 
 from core import config

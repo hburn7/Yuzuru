@@ -74,7 +74,7 @@ class Anime(commands.Cog):
     @slash_command(guild_ids=[931367517564317707])
     async def nsfw(self, ctx: discord.ApplicationContext,
                    action: Option(str, "Pick a type of NSFW to receive.", autocomplete=get_nsfw_endpoints)):
-        """Sends an NSFW image / gif into the chat"""
+        """Sends an NSFW image / gif into the chat (requires NSFW channel)"""
         if not ctx.channel.is_nsfw():
             await ctx.respond('This command may only be executed in NSFW channels.', ephemeral=True)
             return
@@ -87,16 +87,17 @@ class Anime(commands.Cog):
             embed.description = f'{ctx.user.mention} Hold on a sec! Are you 18 or older and wish to view NSFW content?'
             await ctx.respond(embed=embed, view=view, ephemeral=True)
             await view.wait()
+
+            # We do not need to send confirmation / cancellation messages due to
+            # how the view handles it already.
             if view.value is None:
-                ctx.respond("Timed out...", ephemeral=True)
+                await ctx.respond("Timed out...", ephemeral=True)
                 return
             elif view.value:
-                ctx.respond("Confirmed...", ephemeral=True)
                 User.update({User.nsfw_age_confirm: True, User.nsfw_age_confirm_timestamp: datetime.utcnow()}) \
                     .where(User.id == user.id) \
                     .execute()
             else:
-                ctx.respond("Cancelled...", ephemeral=True)
                 return
 
         embed = YuzuruEmbed()
