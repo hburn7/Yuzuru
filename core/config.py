@@ -14,6 +14,7 @@ class Config:
     postgres_host: str
     postgres_port: int
     postgres_database: str
+    docker: bool
 
 
 def get_or_create_config():
@@ -32,6 +33,7 @@ def get_or_create_config():
             "postgres_host": "localhost",
             "postgres_port": 5432,
             "postgres_database": "Yuzuru",
+            "docker": True
         }
         with open(config_path.absolute(), 'w') as conf:
             config.write(conf)
@@ -44,4 +46,4 @@ def get_or_create_config():
         config.read(config_path.absolute())
         data = config[key]
         return Config(data["token"], data["postgres_username"], data["postgres_pass"],
-                      data["postgres_host"], int(data["postgres_port"]), data["postgres_database"])
+                      data["postgres_host"], int(data["postgres_port"]), data["postgres_database"], bool(data["docker"]))
