@@ -1,6 +1,5 @@
 # === CUSTOM ===
 logs/
-pycord/
 .idea/
 config.ini
 yuzuru.db
