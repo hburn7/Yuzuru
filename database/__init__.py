@@ -9,8 +9,13 @@ def get_db():
     host = config.postgres_host
     port = config.postgres_port
     db_name = config.postgres_database
+    docker = config.docker
 
-    psql_db = PostgresqlDatabase(f'postgresql://{user}:{pw}@{host}:{port}/{db_name}')
+    if docker:
+        connection_str = f'postgresql://{user}:{pw}@db/{db_name}'
+    else:
+        connection_str = f'postgresql://{user}:{pw}@{host}:{port}/{db_name}'
+    psql_db = PostgresqlDatabase(connection_str)
     return psql_db
 
 
