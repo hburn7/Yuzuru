@@ -17,3 +17,8 @@ services:
     - POSTGRES_DB=yuzuru
     volumes:
     - postgres-yuzuru:/var/lib/postgresql/data
+
+networks:
+  default:
+    external:
+      name: yuzuru-network
