@@ -46,4 +46,4 @@ def get_or_create_config():
         config.read(config_path.absolute())
         data = config[key]
         return Config(data["token"], data["postgres_username"], data["postgres_pass"],
-                      data["postgres_host"], int(data["postgres_port"]), data["postgres_database"], bool(data["docker"]))
+                      data["postgres_host"], int(data["postgres_port"]), data["postgres_database"], data["docker"] == "True")

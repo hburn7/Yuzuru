@@ -10,10 +10,15 @@ services:
   db:
     image: postgres
     ports:
-    - 5500:5432
+    - "5500:5432"
     environment:
     - POSTGRES_USER=postgres
     - POSTGRES_PASSWORD=password
     - POSTGRES_DB=yuzuru
     volumes:
     - postgres-yuzuru:/var/lib/postgresql/data
+
+networks:
+  default:
+    external:
+      name: yuzuru-network

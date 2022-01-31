@@ -1,16 +1,23 @@
+import asyncio
 import logging
 import discord
 
 from datetime import datetime
+from discord.ext import tasks
 from discord.ext.commands import AutoShardedBot
 
-from database.models.db_models import CommandHistory, User
+from database.models.db_models import CommandHistory, User, Log
 
 
 # noinspection PyAbstractClass,PyMethodMayBeStatic
 class YuzuruBot(AutoShardedBot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Start tasks
+        self.db_log.start()
+
+    # === EVENTS ===
 
     async def on_ready(self):
         logging.info("Welcome to Yuzuru!")
@@ -30,3 +37,24 @@ class YuzuruBot(AutoShardedBot):
                                     timestamp=datetime.utcnow())
                 ch.save()
         await super().on_interaction(interaction)
+
+    # === TIMERS ===
+    @tasks.loop(seconds=600)
+    async def db_log(self):
+        guilds = len(self.guilds)
+        users = User.select().order_by(User.id.desc()).first()
+        commands = CommandHistory.select().order_by(CommandHistory.id.desc()).first()
+
+        # If either users or commands are None, there are no objects in the database.
+        # Set to zero if so. Otherwise, use value of id.
+        users = users.id if users is not None else 0
+        commands = commands.id if commands is not None else 0
+
+        log = Log(guilds=guilds, users=users, commands=commands)
+        log.save()
+        logging.info(f'Status logged: {log}')
+
+    @db_log.before_loop
+    async def await_ready(self):
+        # Wait until the bot logs in
+        await self.wait_until_ready()
