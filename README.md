@@ -4,9 +4,9 @@ Successor to [Kaguya](https://github.com/kaguyabot/Kaguya)
 ## Development
 Follow the instructions below to run Yuzuru on your own.
 
-### Technical Requirements:
-- [Python](https://www.python.org/) version 3.8 or higher
-- Latest version of [pip](https://pypi.org/project/pip/)
+### Prerequisites:
+- [Docker](https://docs.docker.com/get-docker/)
+- A Discord bot token (read more below)
 
 ### Discord Bot Creation
 _This section may be skipped if you already have a Discord bot created._
@@ -14,43 +14,67 @@ _This section may be skipped if you already have a Discord bot created._
 - Check out the "Getting Started" section of [this article](https://www.howtogeek.com/364225/how-to-make-your-own-discord-bot/).
 - Copy the bot's "token" into a safe place, we will use it later.
 
-### Downloading and Running the Source Code
+### Running the Bot
 Clone the source code into your favorite directory.
 
-```
-git clone https://github.com/hburn7/Yuzuru
-```
-
-Now, we must create the virtual environment to install packages into and our code from. This is so 
-your computer's python/pip configuration doesn't get cluttered with Yuzuru specific packages.
-
-Create and activate the virtual environment.
-```
-python3 -m venv env
-source env/bin/activate
-```
-Upgrade pip to the latest version in the virtual environment.
-```
-python3 -m pip install --upgrade pip
+```shell
+$ git clone https://github.com/hburn7/Yuzuru && cd Yuzuru
 ```
 
-Install all project packages into the virtual environment.
+**Configuration file**
+
+Ensure the `config.ini` file has accurate information.
+Paste your token inside of the token section. It should look like this: `token = YOUR_TOKEN_HERE` - no quotes.
+For testing, the default postgres information can be left the same. _Port 5500 is used over 5432 to avoid conflicts
+with existing databases running on your system._ Docker maps the ports for us. Lastly, set `docker = True` when
+running the program through `docker-compose`. If you are working in an IDE and testing through that, set it to `False` instead.
+More on that later.
+
+**Start the program**
+
+Docker compose automatically configures the database and bot to run together in an isolated environment.
+**NOTE:** The database credentials in `docker-compose.yml` must match those in `config.ini`.
+Please validate consistencies if any issues arise. Once everything is in order, run Yuzuru through `docker-compose`.
+```shell
+$ docker-compose up
 ```
-pip install -r requirements.txt
+_If you run into issues, check out the [Docker Compose Installation Guide.](https://docs.docker.com/compose/install/)_
+
+### Editing the Source Code
+Use your favorite IDE or text editor to modify and run Yuzuru locally in a development environment.
+Yuzuru needs a database in order to function, so we can configure that separately, again using Docker.
+
+**Configuration file**
+Ensure `config.ini` and the values provided below match exactly. Otherwise, the bot will be unable to connect 
+to the database. Docker relies on the values passed in the CLI, Yuzuru relies on the values in config.ini.
+
+**Spin up the database locally**
+
+_Following the default `config.ini` values..._
+
+```shell
+$ docker run -d -p 5500:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_DB=yuzuru postgres
 ```
 
-Yuzuru relies on the latest development version of [Pycord](https://github.com/Pycord-Development/pycord).
-Install the latest alpha development build.
-```
-git clone https://github.com/Pycord-Development/pycord
-cd pycord
-python3 -m pip install -U .[voice]
-```
-_Note: If the last step above does not work, remove the `[voice]` from the end of the command._
+An ID will be output to the console. View the logs of the database at anytime using `docker logs [-f] <id>`.
+Specify `-f` if you want continuous, live output.
 
-You should now be able to run Yuzuru. Open Yuzuru in your favorite Python development environment and configure
-it to run `main.py` with `env/bin/python` as the interpreter. You should get an error related to not having your token properly setup. If you don't
-see this error, check your configuration and installation. Now, grab your discord bot token from earlier and paste 
-it into the newly created `config.ini` file in the root directory. Do not surround the token with quotation marks.
+Now that you have the database configured, we're almost ready to run Yuzuru.
 
-Yuzuru should now login to Discord. If you see a console message saying "Welcome to Yuzuru!", you're all set!
+**Create a virtual environment**
+
+Run the following in the project's root directory to configure Yuzuru's virtual environment.
+```shell
+$ python3 -m venv env && source env/bin/activate
+```
+
+`(env)` should now appear at the front of the console commands you run. e.g. `(env) [user@example Yuzuru]$`
+
+Install the required packages.
+```shell
+$ pip install -r requirements.txt
+```
+
+And that's it! You are ready to run Yuzuru. Configure your IDE's Python interpreter to point to `[...]/Yuzuru/env/bin/python`.
+
+Yuzuru runs through `main.py` -- try it now with `python main.py`!
