@@ -3,6 +3,7 @@ logs/
 .idea/
 config.ini
 yuzuru.db
+jenkins-pipeline.groovy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
