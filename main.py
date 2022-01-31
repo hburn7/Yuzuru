@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 
 from database import db
-from database.models.db_models import CommandHistory, User
+from database.models.db_models import User, CommandHistory, Log
 from commands import anime, basic
 from core import config
 from core.yuzuru_bot import YuzuruBot
@@ -19,7 +19,7 @@ from utils.log_formatter import LogFormatter
 def main():
     # Configure logger
     formatter = LogFormatter()
-    s = datetime.datetime.now()
+    s = datetime.datetime.utcnow()
     path = Path('./logs')
     file = f'{path.absolute()}/yuzuru_{s.year}-{s.month}-{s.day}-{s.hour}{s.minute}{s.second}.log'
 
@@ -40,7 +40,7 @@ def main():
     while True:
         try:
             db.connect()
-            db.create_tables([CommandHistory, User])
+            db.create_tables([CommandHistory, User, Log])
             break
         except Exception as e:
             logging.critical(f'Failed to establish a database connection. Retrying...')
