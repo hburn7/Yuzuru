@@ -17,8 +17,8 @@ _This section may be skipped if you already have a Discord bot created._
 ### Running the Bot
 Clone the source code into your favorite directory.
 
-```shell
-$ git clone https://github.com/hburn7/Yuzuru && cd Yuzuru
+```
+git clone https://github.com/hburn7/Yuzuru && cd Yuzuru
 ```
 
 **Configuration file**
@@ -35,15 +35,15 @@ More on that later.
 This specific Docker compose file relies on a pre-existing network named `yuzuru-network`. This is to ensure everything 
 plays nice with VPNs run on the local machine. This must be run regardless of whether you use a VPN.
 
-```shell
-$ docker network create yuzuru-network --subnet 172.24.24.0/24
+```
+docker network create yuzuru-network --subnet 172.24.24.0/24
 ```
 
 Docker compose automatically configures the database and bot to run together in an isolated environment.
 **NOTE:** The database credentials in `docker-compose.yml` must match those in `config.ini`.
 Please validate consistencies if any issues arise. Once everything is in order, run Yuzuru through `docker-compose`.
-```shell
-$ docker-compose up
+```
+docker-compose up
 ```
 _If you run into issues, check out the [Docker Compose Installation Guide.](https://docs.docker.com/compose/install/)_
 
@@ -59,8 +59,8 @@ to the database. Docker relies on the values passed in the CLI, Yuzuru relies on
 
 _Following the default `config.ini` values..._
 
-```shell
-$ docker run -d -p 5500:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_DB=yuzuru postgres
+```
+docker run -d -p 5500:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_DB=yuzuru postgres
 ```
 
 An ID will be output to the console. View the logs of the database at anytime using `docker logs [-f] <id>`.
@@ -71,15 +71,15 @@ Now that you have the database configured, we're almost ready to run Yuzuru.
 **Create a virtual environment**
 
 Run the following in the project's root directory to configure Yuzuru's virtual environment.
-```shell
-$ python3 -m venv env && source env/bin/activate
+```
+python3 -m venv env && source env/bin/activate
 ```
 
 `(env)` should now appear at the front of the console commands you run. e.g. `(env) [user@example Yuzuru]$`
 
 Install the required packages.
-```shell
-$ pip install -r requirements.txt
+```
+pip install -r requirements.txt
 ```
 
 And that's it! You are ready to run Yuzuru. Configure your IDE's Python interpreter to point to `[...]/Yuzuru/env/bin/python`.
