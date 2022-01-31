@@ -32,6 +32,13 @@ More on that later.
 
 **Start the program**
 
+This specific Docker compose file relies on a pre-existing network named `yuzuru-network`. This is to ensure everything 
+plays nice with VPNs run on the local machine. This must be run regardless of whether you use a VPN.
+
+```shell
+$ docker network create yuzuru-network --subnet 172.24.24.0/24
+```
+
 Docker compose automatically configures the database and bot to run together in an isolated environment.
 **NOTE:** The database credentials in `docker-compose.yml` must match those in `config.ini`.
 Please validate consistencies if any issues arise. Once everything is in order, run Yuzuru through `docker-compose`.
