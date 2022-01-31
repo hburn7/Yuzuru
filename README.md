@@ -23,12 +23,24 @@ git clone https://github.com/hburn7/Yuzuru && cd Yuzuru
 
 **Configuration file**
 
-Ensure the `config.ini` file has accurate information.
+Create a `config.ini` file in the project root directory.
+```ini
+[BOT_CONFIG]
+token = YOUR_TOKEN_HERE
+postgres_username = postgres
+postgres_pass = password
+postgres_host = localhost
+postgres_port = 5500
+postgres_database = yuzuru
+docker = False
+```
+
+Ensure the `config.ini` file has accurate information. The postgres username and password values are arbitrary - Docker handles everything. What's important is that the `docker-compose.yml` file has the same credentials, more on this later.
 Paste your token inside of the token section. It should look like this: `token = YOUR_TOKEN_HERE` - no quotes.
 For testing, the default postgres information can be left the same. _Port 5500 is used over 5432 to avoid conflicts
 with existing databases running on your system._ Docker maps the ports for us. Lastly, set `docker = True` when
 running the program through `docker-compose`. If you are working in an IDE and testing through that, set it to `False` instead.
-More on that later.
+More on that later. Realistically, the only value that needs to be changed is the token when developing locally, as the default docker-compose.yml will work with the default config provided here.
 
 **Start the program**
 
@@ -52,6 +64,7 @@ Use your favorite IDE or text editor to modify and run Yuzuru locally in a devel
 Yuzuru needs a database in order to function, so we can configure that separately, again using Docker.
 
 **Configuration file**
+
 Ensure `config.ini` and the values provided below match exactly. Otherwise, the bot will be unable to connect 
 to the database. Docker relies on the values passed in the CLI, Yuzuru relies on the values in config.ini.
 
