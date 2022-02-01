@@ -1,15 +1,15 @@
 import anime_images_api
 import discord
 import nekos
+import random
 
-from datetime import datetime
+from pathlib import Path
+
 from discord import Option
 from discord.commands import slash_command
 from discord.ext import commands
 
-import views
-
-from database.models.db_models import User
+from core import config
 from core.text.yuzuru_embed import YuzuruEmbed
 
 sfw_endpoints = ['hug', 'kiss', 'slap', 'wink', 'pat', 'kill', 'cuddle']
@@ -30,8 +30,27 @@ def get_sfw_endpoints(ctx: discord.AutocompleteContext):
     return [x for x in sfw_endpoints if x.startswith(ctx.value.lower())]
 
 
-def get_nsfw_endpoints(ctx: discord.AutocompleteContext):
-    return [x for x in nsfw_endpoints if x.startswith(ctx.value.lower())]
+def load_paths_from_source(d):
+    """
+    Loads absolute file paths into a list from a given directory.
+    :param d: Source directory
+    :return: None if empty, List[str] if any files are found.
+    """
+    if d == '':
+        return None
+
+    path = Path(d)
+    if not path.exists():
+        raise FileNotFoundError(f'Directory {d} does not exist.')
+
+    if not path.is_dir():
+        raise NotADirectoryError(f'{d} is not a directory.')
+
+    ret = []
+    for f in path.iterdir():
+        ret.append(f.absolute())
+
+    return ret
 
 
 class Anime(commands.Cog):
@@ -39,19 +58,38 @@ class Anime(commands.Cog):
         self.bot = bot
         self.api = anime_images_api.Anime_Images()
 
-    @slash_command(guild_ids=[931367517564317707])
+        self.neko_images = None
+        self.lewd_images = None
+        self.nsfw_images = None
+
+        # Try to read images from config directories. Leave empty if not found.
+        if config.has_neko_dir:
+            self.neko_images = load_paths_from_source(config.neko_dir)
+
+        if config.has_lewd_dir:
+            self.lewd_images = load_paths_from_source(config.lewd_dir)
+
+        if config.has_nsfw_dir:
+            self.nsfw_images = load_paths_from_source(config.nsfw_dir)
+
+    @slash_command()
     async def neko(self, ctx):
         """Sends a picture of a cute cat into chat"""
-        embed = YuzuruEmbed()
-        embed.set_image(url=nekos.cat())
-        await ctx.respond(embed=embed)
+        if self.neko_images:
+            path = random.choice(self.neko_images)
+            await ctx.respond(file=discord.File(path))
+        else:
+            # Rely on API as fallback
+            embed = YuzuruEmbed()
+            embed.set_image(url=nekos.cat())
+            await ctx.respond(embed=embed)
 
-    @slash_command(guild_ids=[931367517564317707])
+    @slash_command()
     async def owoify(self, ctx, text: str):
         """OwO-ify's your text"""
         await ctx.respond(nekos.owoify(text))
 
-    @slash_command(guild_ids=[931367517564317707])
+    @slash_command()
     async def gif(self, ctx: discord.ApplicationContext,
                   action: Option(str, "Pick an action!", autocomplete=get_sfw_endpoints),
                   user: Option(discord.User, "Target someone with your message.", required=False)):
@@ -71,38 +109,34 @@ class Anime(commands.Cog):
         else:
             await ctx.respond(embed=embed)
 
-    @slash_command(guild_ids=[931367517564317707])
-    async def nsfw(self, ctx: discord.ApplicationContext,
-                   action: Option(str, "Pick a type of NSFW to receive.", autocomplete=get_nsfw_endpoints)):
+    @slash_command()
+    async def nsfw(self, ctx):
         """Sends an NSFW image / gif into the chat (requires NSFW channel)"""
-        if not ctx.channel.is_nsfw():
-            await ctx.respond('This command may only be executed in NSFW channels.', ephemeral=True)
+        if not await ctx.nsfw_check():
             return
 
-        user, created = User.get_or_create(user_id=ctx.user.id)
+        await ctx.nsfw_age_confirm()
 
-        if not user.nsfw_age_confirm:
+        if self.nsfw_images:
+            path = random.choice(self.nsfw_images)
+            await ctx.respond(file=discord.File(path))
+        else:
             embed = YuzuruEmbed()
-            view = views.Confirm()
-            embed.description = f'{ctx.user.mention} Hold on a sec! Are you 18 or older and wish to view NSFW content?'
-            await ctx.respond(embed=embed, view=view, ephemeral=True)
-            await view.wait()
+            embed.set_image(url=self.api.get_nsfw('hentai'))
+            await ctx.respond(embed=embed)
 
-            # We do not need to send confirmation / cancellation messages due to
-            # how the view handles it already.
-            if view.value is None:
-                await ctx.respond("Timed out...", ephemeral=True)
-                return
-            elif view.value:
-                User.update({User.nsfw_age_confirm: True, User.nsfw_age_confirm_timestamp: datetime.utcnow()}) \
-                    .where(User.id == user.id) \
-                    .execute()
-            else:
-                return
+    @slash_command()
+    async def lewd(self, ctx):
+        if not await ctx.nsfw_check():
+            return
 
-        embed = YuzuruEmbed()
-        embed.set_image(url=self.api.get_nsfw(action))
-        await ctx.respond(embed=embed)
+        await ctx.nsfw_age_confirm()
+
+        if self.lewd_images:
+            path = random.choice(self.lewd_images)
+            await ctx.respond(file=discord.File(path))
+        else:
+            await ctx.respond(f'Whoops! Something went wrong. (No lewds, please use another command).', ephemeral=True)
 
 
 def setup(bot):
