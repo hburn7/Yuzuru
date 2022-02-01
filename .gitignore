@@ -1,4 +1,5 @@
 # === CUSTOM ===
+data/
 logs/
 .idea/
 config.ini
