@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import discord
 
@@ -7,6 +6,8 @@ from discord.ext import tasks
 from discord.ext.commands import AutoShardedBot
 
 from database.models.db_models import CommandHistory, User, Log
+
+logger = logging.getLogger(__name__)
 
 
 # noinspection PyAbstractClass,PyMethodMayBeStatic
@@ -18,9 +19,8 @@ class YuzuruBot(AutoShardedBot):
         self.db_log.start()
 
     # === EVENTS ===
-
     async def on_ready(self):
-        logging.info("Welcome to Yuzuru!")
+        logger.info("Welcome to Yuzuru!")
 
     async def on_interaction(self, interaction: discord.Interaction):
         options = interaction.data.get('options')
@@ -52,7 +52,7 @@ class YuzuruBot(AutoShardedBot):
 
         log = Log(guilds=guilds, users=users, commands=commands)
         log.save()
-        logging.info(f'Status logged: {log}')
+        logger.info(f'Status logged: {log}')
 
     @db_log.before_loop
     async def await_ready(self):
