@@ -1,23 +1,14 @@
-import sys
-
-import discord
-import datetime
 import logging
 import logging.config
-import time
+import datetime
 
 from pathlib import Path
 
-from database import db
-from database.models.db_models import User, CommandHistory, Log
-from commands import anime, basic
-from core import config
-from core.yuzuru_bot import YuzuruBot
 from utils.log_formatter import LogFormatter
 
 
-def main():
-    # Configure logger
+# Configure logger first thing -- other imports rely on a configured logger before main() would set it up.
+def setup_logger():
     formatter = LogFormatter()
     s = datetime.datetime.utcnow()
     path = Path('./logs')
@@ -36,15 +27,35 @@ def main():
     console.setFormatter(LogFormatter())
     logging.getLogger('').addHandler(console)
 
+
+setup_logger()
+
+import sys
+import discord
+import time
+
+from database import db
+from database.models.db_models import User, CommandHistory, Log
+from commands import anime, basic
+from core import config
+from core.yuzuru_bot import YuzuruBot
+
+logger = logging.getLogger('main')
+logger.debug("Logger initialized.")
+
+
+def main():
     # Init DB -- reconnect on failure
     while True:
+        logger.debug(f'Attempting database connection...')
         try:
             db.connect()
+            logger.debug(f'Connected to database!')
             db.create_tables([CommandHistory, User, Log])
             break
         except Exception as e:
-            logging.critical(f'Failed to establish a database connection. Retrying...')
-            logging.debug(f'Exception info: {e}')
+            logger.critical(f'Failed to establish a database connection. Retrying...')
+            logger.debug(f'Exception info: {e}')
             time.sleep(2)
 
     # Configure bot
@@ -57,7 +68,7 @@ def main():
     try:
         bot.run(config.token)
     except discord.LoginFailure:
-        logging.critical("--- Failed to launch Yuzuru. Is your token correct? (check config.ini) ---")
+        logger.critical("--- Failed to launch Yuzuru. Is your token correct? (check config.ini) ---")
         sys.exit(1)
 
 
