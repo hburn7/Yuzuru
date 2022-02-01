@@ -23,7 +23,8 @@ git clone https://github.com/hburn7/Yuzuru && cd Yuzuru
 
 **Configuration file**
 
-Create a `config.ini` file in the project root directory.
+Create a `config.ini` file in the project root directory. 
+You may also launch the application and it will be generated for you.
 ```ini
 [BOT_CONFIG]
 token = YOUR_TOKEN_HERE
@@ -33,6 +34,11 @@ postgres_host = localhost
 postgres_port = 5500
 postgres_database = yuzuru
 docker = False
+
+[DATA]
+neko_dir = 
+lewd_dir = 
+nsfw_dir = 
 ```
 
 Ensure the `config.ini` file has accurate information. The postgres username and password values are arbitrary - Docker handles everything. What's important is that the `docker-compose.yml` file has the same credentials, more on this later.
