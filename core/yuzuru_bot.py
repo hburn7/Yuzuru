@@ -63,7 +63,6 @@ class YuzuruBot(AutoShardedBot):
         if options is not None:
             if 'focused' not in options[0].keys():
                 user, created = User.get_or_create(user_id=interaction.user.id)
-
                 user.command_count += 1
                 user.save()
 

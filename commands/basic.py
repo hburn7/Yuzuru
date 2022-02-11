@@ -27,7 +27,6 @@ class Basic(commands.Cog):
         stamp = datetime.utcnow()
         if user.daily_last_claimed and user.daily_last_claimed > stamp - timedelta(hours=cooldown_hrs):
             time_remaining = timedelta(hours=cooldown_hrs) - (stamp - user.daily_last_claimed)
-
             time_str = str(time_remaining).split('.')[0]
             await ctx.respond(f'You have already claimed your daily bonus. Try again in `{time_str}`.')
         else:
