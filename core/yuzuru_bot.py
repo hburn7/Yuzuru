@@ -35,9 +35,9 @@ class YuzuruContext(ApplicationContext):
             # We do not need to send confirmation / cancellation messages due to
             # how the view handles it already.
             if view.value:
-                User.update({User.nsfw_age_confirm: True, User.nsfw_age_confirm_timestamp: datetime.utcnow()}) \
-                    .where(User.id == user.id) \
-                    .execute()
+                user.nsfw_age_confirm = True
+                user.nsfw_age_confirm_timestamp = datetime.utcnow()
+                user.save()
             else:
                 return
 
@@ -64,9 +64,8 @@ class YuzuruBot(AutoShardedBot):
             if 'focused' not in options[0].keys():
                 user, created = User.get_or_create(user_id=interaction.user.id)
 
-                User.update({User.command_count: user.command_count + 1}) \
-                    .where(User.id == user.id) \
-                    .execute()
+                user.command_count += 1
+                user.save()
 
                 ch = CommandHistory(user=user, command=interaction.data.get('name'),
                                     options=interaction.data.get('options'),
