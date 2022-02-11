@@ -35,8 +35,8 @@ import discord
 import time
 
 from database import db
-from database.models.db_models import User, CommandHistory, Log
-from commands import anime, basic
+from database.models.db_models import User, CommandHistory, GambleHistory, Log
+from commands import anime, basic, games
 from core import config
 from core.yuzuru_bot import YuzuruBot
 
@@ -51,7 +51,7 @@ def main():
         try:
             db.connect()
             logger.debug(f'Connected to database!')
-            db.create_tables([CommandHistory, User, Log])
+            db.create_tables([User, CommandHistory, GambleHistory, Log])
             break
         except Exception as e:
             logger.critical(f'Failed to establish a database connection. Retrying...')
@@ -64,6 +64,7 @@ def main():
     # Register all cogs
     anime.setup(bot)
     basic.setup(bot)
+    games.setup(bot)
 
     try:
         bot.run(config.token)
