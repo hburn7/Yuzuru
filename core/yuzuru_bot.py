@@ -1,13 +1,12 @@
 import logging
-import discord
-
-import views
-
 from datetime import datetime
+
+import discord
 from discord import ApplicationContext
 from discord.ext import tasks
-from discord.ext.commands import AutoShardedBot, Context
+from discord.ext.commands import AutoShardedBot
 
+import views
 from core.text.yuzuru_embed import YuzuruEmbed
 from database.models.db_models import CommandHistory, User, Log
 
