@@ -31,7 +31,7 @@ class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @slash_command(guild_ids=[931367517564317707])
+    @slash_command()
     async def dice(self, ctx: YuzuruContext, spirits: int,
                    action: Option(str, "Will the outcome be higher, lower, or exactly seven?",
                                   autocomplete=get_dice_options)):
