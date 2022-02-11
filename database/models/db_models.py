@@ -1,7 +1,7 @@
 from datetime import datetime
 from peewee import CharField, DateTimeField, IntegerField, \
     BigIntegerField, TextField, ForeignKeyField, IdentityField, \
-    BooleanField
+    BooleanField, DoubleField
 from database import YuzuruModel
 
 
@@ -22,6 +22,14 @@ class CommandHistory(YuzuruModel):
     options = TextField(null=True)
     timestamp = DateTimeField(default=datetime.utcnow())
     user = ForeignKeyField(User, backref='commands')
+
+
+class GambleHistory(YuzuruModel):
+    id = IdentityField()
+    game = TextField()
+    win = BooleanField(default=False)
+    bet = IntegerField()
+    payout_multiplier = DoubleField(default=0.0)
 
 
 class Log(YuzuruModel):
