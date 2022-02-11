@@ -12,6 +12,7 @@ class User(YuzuruModel):
     spirits = IntegerField(default=0)
     nsfw_age_confirm = BooleanField(default=False)
     nsfw_age_confirm_timestamp = DateTimeField(null=True)
+    daily_last_claimed = DateTimeField(null=True)
     timestamp = DateTimeField(default=datetime.utcnow())
 
 
