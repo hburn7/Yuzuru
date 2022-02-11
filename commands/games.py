@@ -62,8 +62,8 @@ class Games(commands.Cog):
         # First thing, take away spirits
         user.spirits -= spirits
 
-        d1 = random.randint(1, 7)
-        d2 = random.randint(1, 7)
+        d1 = random.randint(1, 6)
+        d2 = random.randint(1, 6)
         outcome = d1 + d2
 
         payout_multiplier = 0
@@ -74,9 +74,12 @@ class Games(commands.Cog):
             winning_selection = dice_outcomes[1]
         elif outcome == 7:
             winning_selection = dice_outcomes[2]
-            payout_multiplier = dice_exact_win_multiplier
 
         if winning_selection == action:
+            payout_multiplier = dice_std_win_multiplier
+            if outcome == 7:
+                payout_multiplier = dice_exact_win_multiplier
+
             # User won
             user.spirits += spirits * payout_multiplier
 
@@ -96,6 +99,7 @@ class Games(commands.Cog):
             if payout_multiplier == dice_exact_win_multiplier:
                 embed.color = discord.Color.gold()
 
+            embed.title = "Dice: Winner"
             embed.description = f'{statement}\n🎲 {d1} 🎲 {d2} = 🎲🎲 {outcome} (Prediction: {action})\n' \
                                 f'Payout: `{payout_multiplier}x`: +{spirits * payout_multiplier}'
             embed.set_footer(text=f'You now have {user.spirits} spirits.')
@@ -108,6 +112,7 @@ class Games(commands.Cog):
             statement = random.choice(dice_loss_responses)
 
             embed = YuzuruEmbed()
+            embed.title = "Dice: Loser"
             embed.color = discord.Color.red()
             embed.description = f'{statement}\n🎲 {d1} + 🎲 {d2} = 🎲🎲 {outcome} (Prediction: {action})'
             embed.set_footer(text=f'You now have {user.spirits} spirits.')
