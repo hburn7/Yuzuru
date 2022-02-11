@@ -20,6 +20,7 @@ class Basic(commands.Cog):
 
     @slash_command()
     async def daily(self, ctx):
+        """Claim 500 spirits (24h cooldown)"""
         cooldown_hrs = 24
         amount = 500
 
