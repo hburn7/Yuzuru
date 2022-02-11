@@ -26,7 +26,7 @@ class Config:
 
 
 def path_valid(p):
-    return p is not '' and Path(p).exists()
+    return p != '' and Path(p).exists()
 
 
 def get_or_create_config():
