@@ -18,8 +18,8 @@ imageio-ffmpeg==0.4.5
 multidict==6.0.2
 nekos.py==1.0.3
 numpy==1.22.2
-peewee==3.14.8
-psycopg2==2.9.3
+peewee==3.14.9
+psycopg2-binary==2.9.3
 py-cord==2.0.0b4
 pycparser==2.21
 Pygments==2.11.2
