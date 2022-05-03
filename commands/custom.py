@@ -16,6 +16,7 @@ class Custom(commands.Cog):
         only if all users from the paste exist in the discord."""
 
         embed = YuzuruEmbed()
+        description = ''
 
         # Check if everyone is present
         valid = True
@@ -25,17 +26,18 @@ class Custom(commands.Cog):
         for name in search:
             match = ctx.guild.get_member_named(name)
             if match is None:
-                embed.description += f'❌ {name} is not in the server!\n'
+                description += f'❌ {name} is not in the server!\n'
                 valid = False
             else:
-                embed.description += f'✅ {match.mention} is present.\n'
+                description += f'✅ {match.mention} is present.\n'
                 found_users.append(match)
 
         if not valid:
             embed.title = 'Team creation failed! (Missing members)'
-            embed.description += 'The missing members must join the server ' \
-                                 'before team creation may occur.'
+            description += 'The missing members must join the server ' \
+                           'before team creation may occur.'
 
+            embed.description = description
             await ctx.respond(embed=embed)
             return
 
@@ -54,7 +56,7 @@ class Custom(commands.Cog):
         stt3_player_role = ctx.guild.get_role(968224711144267896)
         stt3_captain_role = ctx.guild.get_role(968224654252703834)
 
-        embed.description += f'\nDenoted {captain.mention} as captain.'
+        description += f'\nDenoted {captain.mention} as captain.'
 
         await captain.add_roles(stt3_captain_role)
 
@@ -65,6 +67,7 @@ class Custom(commands.Cog):
             except Exception as e:
                 await ctx.respond(f'Failed to add role {team_role} to {user} -- {e}')
 
+        embed.description = description
         await ctx.respond(embed=embed)
 
 
