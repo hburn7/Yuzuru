@@ -77,7 +77,7 @@ class Custom(commands.Cog):
 
         embed.title = 'Team Creation Success'
         embed.description = description
-        await ctx.respond(embed=embed)
+        await ctx.defer(embed=embed)
 
 
 def setup(bot):
