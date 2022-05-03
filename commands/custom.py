@@ -21,6 +21,7 @@ class Custom(commands.Cog):
         # Check if everyone is present
         valid = True
         search = [x.strip() for x in tag_paste.split(' ')]
+        await ctx.guild.fetch_members().flatten()
 
         found_users = []
         for name in search:
