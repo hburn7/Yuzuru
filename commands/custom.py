@@ -15,13 +15,14 @@ class Custom(commands.Cog):
         """Creates a team role and applies it to all users in the team,
         only if all users from the paste exist in the discord."""
 
+        team_name = f'STT3 Team: {team_name}'
+
         embed = YuzuruEmbed()
         description = ''
 
         # Check if everyone is present
         valid = True
         search = [x.strip() for x in tag_paste.split(' ')]
-        await ctx.guild.fetch_members().flatten()
 
         found_users = []
         for name in search:
@@ -42,7 +43,6 @@ class Custom(commands.Cog):
             await ctx.respond(embed=embed)
             return
 
-        await ctx.respond(f'Users validated, creating team {team_name}...')
         team_role = await ctx.guild.create_role(name=team_name, color=discord.Color.blurple(), mentionable=True)
 
         # Force role on the bottom, just to be sure.
@@ -57,7 +57,7 @@ class Custom(commands.Cog):
         stt3_player_role = ctx.guild.get_role(968224711144267896)
         stt3_captain_role = ctx.guild.get_role(968224654252703834)
 
-        description += f'\nDenoted {captain.mention} as captain.'
+        description += f'\nDenoted {captain.mention} as captain of {team_role}.'
 
         await captain.add_roles(stt3_captain_role)
 
