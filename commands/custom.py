@@ -44,11 +44,12 @@ class Custom(commands.Cog):
                 found_users.append(match)
 
         if not valid:
-            embed.title = 'Team creation failed! (Missing members)'
+            embed.title = f'Team creation failed! ({old_team_name})'
             description += 'The missing members must join the server ' \
                            'before team creation may occur.'
 
             embed.description = description
+            embed.color = discord.Color.red()
             await ctx.respond(embed=embed)
             return
 
