@@ -36,7 +36,7 @@ import time
 
 from database import db
 from database.models.db_models import User, CommandHistory, GambleHistory, Log
-from commands import anime, basic, games
+from commands import anime, basic, games, custom
 from core import config
 from core.yuzuru_bot import YuzuruBot
 
@@ -65,6 +65,7 @@ def main():
     anime.setup(bot)
     basic.setup(bot)
     games.setup(bot)
+    custom.setup(bot)
 
     try:
         bot.run(config.token)
