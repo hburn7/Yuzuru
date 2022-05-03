@@ -50,7 +50,15 @@ class Custom(commands.Cog):
             await ctx.respond(embed=embed)
             return
 
-        team_role = await ctx.guild.create_role(name=team_name, color=discord.Color.blurple(), mentionable=True)
+        found = False
+        for role in ctx.guild.roles:
+            if role.name == team_name:
+                team_role = role
+                found = True
+                break
+
+        if not found:
+            team_role = await ctx.guild.create_role(name=team_name, color=discord.Color.blurple(), mentionable=True)
 
         # Force role on the bottom, just to be sure.
         positions = {
