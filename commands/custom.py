@@ -50,7 +50,6 @@ class Custom(commands.Cog):
             await ctx.respond(embed=embed)
             return
 
-        team_role = None
         found = False
         for role in ctx.guild.roles:
             if role.name == team_name:
