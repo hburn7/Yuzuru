@@ -26,6 +26,9 @@ class Custom(commands.Cog):
 
         found_users = []
         for name in search:
+            if name == ' ' or name is None:
+                continue
+
             match = ctx.guild.get_member_named(name)
             if match is None:
                 description += f'❌ {name} is not in the server!\n'
