@@ -22,7 +22,11 @@ class Custom(commands.Cog):
 
         # Check if everyone is present
         valid = True
-        search = [x.strip() for x in tag_paste.split(' ')]
+
+        if '\t' in tag_paste:
+            search = [x.strip() for x in tag_paste.split('\t')]
+        else:
+            search = [x.strip() for x in tag_paste.split(' ')]
 
         found_users = []
         for name in search:
