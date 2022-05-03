@@ -99,12 +99,13 @@ class Anime(commands.Cog):
             await ctx.respond(embed=embed)
 
     @slash_command()
-    async def nsfw(self, ctx, num: Option(int, "Number of images to send en masse.") = 1):
+    async def nsfw(self, ctx, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=10, default=1)):
         """Sends an NSFW image / gif into the chat (requires NSFW channel)"""
         if not await ctx.nsfw_check():
             return
 
         await ctx.nsfw_age_confirm()
+        await ctx.defer()
 
         if num > 10 or num < 1:
             await ctx.respond('Number of images must be between 1 and 10.', ephemeral=True)
@@ -121,12 +122,13 @@ class Anime(commands.Cog):
                 await ctx.respond(embed=embed)
 
     @slash_command()
-    async def lewd(self, ctx, num: Option(int, "Number of images to send en masse.") = 1):
+    async def lewd(self, ctx, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=10, default=1)):
         if not await ctx.nsfw_check():
             return
 
         await ctx.nsfw_age_confirm()
-
+        
+        await ctx.defer()
         if self.lewd_images:
             for i in range(num):
                 path = random.choice(self.lewd_images)
@@ -135,7 +137,7 @@ class Anime(commands.Cog):
             await ctx.respond(f'Whoops! Something went wrong. (No lewds)', ephemeral=True)
 
     @slash_command()
-    async def neko(self, ctx, num: Option(int, "Number of images to send en masse.") = 1):
+    async def neko(self, ctx, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=10, default=1)):
         """Sends a picture of a cute cat into chat"""
         if self.neko_images:
             for i in range(num):
