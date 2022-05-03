@@ -15,6 +15,7 @@ class Custom(commands.Cog):
         """Creates a team role and applies it to all users in the team,
         only if all users from the paste exist in the discord."""
 
+        await ctx.defer()
         team_name = f'STT3 Team: {team_name}'
 
         embed = YuzuruEmbed()
@@ -49,6 +50,8 @@ class Custom(commands.Cog):
             embed.description = description
             await ctx.respond(embed=embed)
             return
+
+        team_role = None
 
         found = False
         for role in ctx.guild.roles:
@@ -85,7 +88,7 @@ class Custom(commands.Cog):
 
         embed.title = 'Team Creation Success'
         embed.description = description
-        await ctx.defer(embed=embed)
+        await ctx.respond(embed=embed)
 
 
 def setup(bot):
