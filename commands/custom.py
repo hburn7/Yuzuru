@@ -26,7 +26,7 @@ class Custom(commands.Cog):
 
         found_users = []
         for name in search:
-            if name == ' ' or name is None:
+            if name == '' or name is None:
                 continue
 
             match = ctx.guild.get_member_named(name)
