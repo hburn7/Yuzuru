@@ -68,6 +68,7 @@ class Custom(commands.Cog):
             except Exception as e:
                 await ctx.respond(f'Failed to add role {team_role} to {user} -- {e}')
 
+        embed.title = 'Team Creation Success'
         embed.description = description
         await ctx.respond(embed=embed)
 
