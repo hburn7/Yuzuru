@@ -16,7 +16,8 @@ class Custom(commands.Cog):
         only if all users from the paste exist in the discord."""
 
         await ctx.defer()
-        team_name = f'STT3 Team: {team_name}'
+        old_team_name = team_name
+        team_name = f'STT3 Team: {old_team_name}'
 
         embed = YuzuruEmbed()
         description = ''
@@ -75,7 +76,7 @@ class Custom(commands.Cog):
         stt3_player_role = ctx.guild.get_role(968224711144267896)
         stt3_captain_role = ctx.guild.get_role(968224654252703834)
 
-        description += f'\nDenoted {captain.mention} as captain of {team_role}.'
+        description += f'\nDenoted {captain.mention} as captain of {team_role.mention}.'
 
         await captain.add_roles(stt3_captain_role)
 
@@ -86,7 +87,7 @@ class Custom(commands.Cog):
             except Exception as e:
                 await ctx.respond(f'Failed to add role {team_role} to {user} -- {e}')
 
-        embed.title = 'Team Creation Success'
+        embed.title = f'Team Creation Success: {old_team_name}'
         embed.description = description
         await ctx.respond(embed=embed)
 
