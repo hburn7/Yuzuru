@@ -6,6 +6,7 @@ volumes:
 
 services:
   bot:
+    image: yuzuru_bot:latest
     build: .
   db:
     image: postgres
