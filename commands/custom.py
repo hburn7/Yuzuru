@@ -65,6 +65,9 @@ class Custom(commands.Cog):
         if not found:
             team_role = await ctx.guild.create_role(name=team_name, color=discord.Color.blurple(), mentionable=True)
 
+        # Disable mention permissions
+        team_role.mentionable = False
+
         # Force role on the bottom, just to be sure.
         positions = {
             team_role: 1
