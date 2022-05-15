@@ -79,6 +79,7 @@ class Custom(commands.Cog):
         captain = found_users[0]
         stt3_player_role = ctx.guild.get_role(968224711144267896)
         stt3_captain_role = ctx.guild.get_role(968224654252703834)
+        stt3_fa_role = ctx.guild.get_role(972226684675825694)
 
         description += f'\nDenoted {captain.mention} as captain of {team_role.mention}.'
 
@@ -90,6 +91,12 @@ class Custom(commands.Cog):
                 await user.add_roles(team_role, stt3_player_role)
             except Exception as e:
                 await ctx.respond(f'Failed to add role {team_role} to {user} -- {e}')
+
+            # Remove Free Agent role
+            try:
+                await user.remove_roles(stt3_fa_role)
+            except Exception as e:
+                await ctx.respond(f'Failed to remove role {team_role} from {user} -- {e}')
 
         embed.title = f'Team Creation Success: {old_team_name}'
         embed.description = description
