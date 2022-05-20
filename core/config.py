@@ -19,10 +19,12 @@ class Config:
     neko_dir: str
     lewd_dir: str
     nsfw_dir: str
+    genshin_dir: str
 
     has_neko_dir: bool
     has_lewd_dir: bool
     has_nsfw_dir: bool
+    has_genshin_dir: bool
 
 
 def path_valid(p):
@@ -54,7 +56,8 @@ def get_or_create_config():
         config[data_key] = {
             "neko_dir": "",
             "lewd_dir": "",
-            "nsfw_dir": ""
+            "nsfw_dir": "",
+            "genshin_dir": ""
         }
 
         with open(config_path.absolute(), 'w') as conf:
@@ -70,12 +73,15 @@ def get_or_create_config():
     has_neko_dir = path_valid(data_data["neko_dir"])
     has_lewd_dir = path_valid(data_data["lewd_dir"])
     has_nsfw_dir = path_valid(data_data["nsfw_dir"])
+    has_genshin_dir = path_valid(data_data["genshin_dir"])
 
     neko_path = str(Path(data_data["neko_dir"]).absolute()) if has_neko_dir else None
     lewd_path = str(Path(data_data["lewd_dir"]).absolute()) if has_lewd_dir else None
     nsfw_path = str(Path(data_data["nsfw_dir"]).absolute()) if has_nsfw_dir else None
+    genshin_path = str(Path(data_data["genshin_dir"]).absolute()) if has_genshin_dir else None
 
     return Config(bot_data["token"], bot_data["postgres_username"], bot_data["postgres_pass"],
                   bot_data["postgres_host"], int(bot_data["postgres_port"]), bot_data["postgres_database"],
                   bot_data["docker"] == "True", neko_dir=neko_path, lewd_dir=lewd_path, nsfw_dir=nsfw_path,
-                  has_neko_dir=has_neko_dir, has_lewd_dir=has_lewd_dir, has_nsfw_dir=has_nsfw_dir)
+                  genshin_dir=genshin_path, has_neko_dir=has_neko_dir, has_lewd_dir=has_lewd_dir,
+                  has_nsfw_dir=has_nsfw_dir, has_genshin_dir=has_genshin_dir)
