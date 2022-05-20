@@ -1,9 +1,21 @@
+import csv
+import os
+
 import discord
+import io
 from discord import slash_command
 from discord.ext import commands
+from typing import List
 
 from core.text.yuzuru_embed import YuzuruEmbed
 from core.yuzuru_bot import YuzuruContext
+
+
+def get_tags(paste):
+    if '\t' in paste:
+        return [x.strip() for x in paste.split('\t')]
+    else:
+        return [x.strip() for x in paste.split(' ')]
 
 
 class Custom(commands.Cog):
@@ -25,13 +37,8 @@ class Custom(commands.Cog):
         # Check if everyone is present
         valid = True
 
-        if '\t' in tag_paste:
-            search = [x.strip() for x in tag_paste.split('\t')]
-        else:
-            search = [x.strip() for x in tag_paste.split(' ')]
-
         found_users = []
-        for name in search:
+        for name in get_tags(tag_paste):
             if name == '' or name is None:
                 continue
 
@@ -99,6 +106,110 @@ class Custom(commands.Cog):
         embed.description = description
         await ctx.respond(embed=embed)
 
+    @commands.command(guild_ids=[968216369529245726])
+    async def stt3_verify(self, ctx: commands.Context):
+        """Verifies all users from all teams are in the discord"""
+
+        if not ctx.message.attachments:
+            await ctx.send("Please upload the STT3 Admin 'Reg Responses' sheet as a `.csv` file attachment.")
+            return
+
+        uid = ctx.message.author.id
+        if not uid == 146092837723832320 and not uid == 289792596287553538:
+            await ctx.send("You lack permissions to execute this command.")
+            return
+
+        # noinspection PyTypeChecker
+        await ctx.message.attachments.pop().save(fp='tmp.csv')
+        await ctx.message.delete()
+
+        roles = ctx.guild.roles
+
+        with open('tmp.csv', mode='r') as file:
+            csvFile = csv.DictReader(file)
+            for row in csvFile:
+                team = Team(row)
+
+                matches = list(filter(lambda x: team.name.lower() in x.name.lower(), roles))
+
+                if not matches:
+                    await ctx.send(f'Manual review required - associated role not found.\n```diff\n- {team}```')
+                    continue
+                else:
+                    role = matches[0]
+
+                missing = team.check_presence(ctx)
+
+                if not missing:
+                    continue
+
+                embed = YuzuruEmbed()
+                description = ''
+                # if not missing:
+                #     embed.title = f'Team Verified ({team.name})'
+                #     description = f'✅ {role.mention} is not missing any players.'
+                # else:
+                #     embed.title = f'Team Verification Failed! ({team.name})'
+                #
+                #     for m in missing:
+                #         description += f'❌ {m} not found.\n'
+
+                embed.title = f'Team Verification Failed! ({team.name})'
+
+                description += f'Associated Role: {role.mention}\n\n'
+
+                for m in missing:
+                    description += f'❌ {m} is missing.\n'
+
+                embed.description = description
+                await ctx.send(embed=embed)
+
+        os.remove('tmp.csv')
+        await ctx.send('**Verification complete. Users found above, if any, will be '
+                       'screened out if they are not in the Discord when registrations close.**')
+        return
+
+
+class Team:
+    def __init__(self, d):
+        self.d = d
+        self.name = d['Team Name'].strip()
+        self.captain = d['(Captain) Player 1 Discord Tag'].strip()
+        self.player_discord_tags = [self.captain, *self.__get_discord_content__()]
+
+    def check_presence(self, ctx: commands.Context) -> List[str]:
+        def present(tag):
+            return ctx.guild.get_member_named(tag) is not None
+
+        not_present = []
+
+        for t in self.player_discord_tags:
+            if not present(t):
+                not_present.append(t)
+
+        return not_present
+
+    def __get_discord_headers__(self):
+        return [f'Player {x} Discord Tag' for x in range(2, 7)]
+
+    def __get_discord_content__(self):
+        headers = self.__get_discord_headers__()
+
+        r = []
+        for h in headers:
+            tag = self.d[h].strip()
+
+            if tag is not None and tag is not '':
+                r.append(tag)
+
+        return r
+
+    def __repr__(self):
+        return f'Team(name={self.name}, captain={self.captain}, players={self.player_discord_tags})'
+
+
+
 
 def setup(bot):
     bot.add_cog(Custom(bot))
+    # bot.add_command(Custom.stt3_verify)
