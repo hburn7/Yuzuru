@@ -59,7 +59,7 @@ def main():
             time.sleep(2)
 
     # Configure bot
-    bot = YuzuruBot(intents=discord.Intents.all())
+    bot = YuzuruBot(intents=discord.Intents.all(), command_prefix='!')
 
     # Register all cogs
     anime.setup(bot)
