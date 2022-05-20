@@ -11,7 +11,7 @@ from discord.ext import commands
 
 from core import config
 from core.text.yuzuru_embed import YuzuruEmbed
-
+from core.yuzuru_bot import YuzuruContext
 
 sfw_endpoints = ['hug', 'kiss', 'slap', 'wink', 'pat', 'kill', 'cuddle']
 nsfw_endpoints = ['boobs', 'hentai']
@@ -62,6 +62,7 @@ class Anime(commands.Cog):
         self.neko_images = None
         self.lewd_images = None
         self.nsfw_images = None
+        self.genshin_images = None
 
         # Try to read images from config directories. Leave empty if not found.
         if config.has_neko_dir:
@@ -72,6 +73,9 @@ class Anime(commands.Cog):
 
         if config.has_nsfw_dir:
             self.nsfw_images = load_paths_from_source(config.nsfw_dir)
+            
+        if config.has_genshin_dir:
+            self.genshin_images = load_paths_from_source(config.genshin_dir)
 
     @slash_command()
     async def owoify(self, ctx, text: str):
@@ -99,19 +103,16 @@ class Anime(commands.Cog):
             await ctx.respond(embed=embed)
 
     @slash_command()
-    async def nsfw(self, ctx, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=10, default=1)):
+    async def nsfw(self, ctx: YuzuruContext, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
         """Sends an NSFW image / gif into the chat (requires NSFW channel)"""
         if not await ctx.nsfw_check():
             return
 
         await ctx.nsfw_age_confirm()
-        await ctx.defer()
-
-        if num > 10 or num < 1:
-            await ctx.respond('Number of images must be between 1 and 10.', ephemeral=True)
-            return
 
         if self.nsfw_images:
+            await ctx.defer()
+
             for i in range(num):
                 path = random.choice(self.nsfw_images)
                 await ctx.respond(file=discord.File(path))
@@ -120,9 +121,25 @@ class Anime(commands.Cog):
                 embed = YuzuruEmbed()
                 embed.set_image(url=self.api.get_nsfw('hentai'))
                 await ctx.respond(embed=embed)
+    
+    @slash_command()
+    async def genshin(self, ctx: YuzuruContext, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
+        if not await ctx.nsfw_check():
+            return
+
+        await ctx.nsfw_age_confirm()
+
+        if self.genshin_images:
+            await ctx.defer()
+
+            for i in range(num):
+                path = random.choice(self.genshin_images)
+                await ctx.respond(file=discord.File(path))
+        else:
+            await ctx.respond('Something went wrong (nothing to send)', ephemeral=True)
 
     @slash_command()
-    async def lewd(self, ctx, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=10, default=1)):
+    async def lewd(self, ctx: YuzuruContext, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
         if not await ctx.nsfw_check():
             return
 
@@ -137,7 +154,7 @@ class Anime(commands.Cog):
             await ctx.respond(f'Whoops! Something went wrong. (No lewds)', ephemeral=True)
 
     @slash_command()
-    async def neko(self, ctx, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=10, default=1)):
+    async def neko(self, ctx, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
         """Sends a picture of a cute cat into chat"""
         if self.neko_images:
             for i in range(num):
