@@ -39,7 +39,7 @@ class Basic(commands.Cog):
             logger.info(f'User {user} claimed daily spirits. They now have {user.spirits} (+{amount}).')
             await ctx.respond(f'Successfully claimed daily spirits! You now have {user.spirits} spirits.')
 
-    @slash_command(guild_ids=[931367517564317707])
+    @slash_command()
     async def clear(self, ctx: YuzuruContext, amount: int):
         if not ctx.user.guild_permissions.manage_messages:
             await ctx.respond('Insufficient permissions')
