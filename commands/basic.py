@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 
+from core.yuzuru_bot import YuzuruContext
 from discord.commands import slash_command
 from discord.ext import commands
 
@@ -38,6 +39,16 @@ class Basic(commands.Cog):
             logger.info(f'User {user} claimed daily spirits. They now have {user.spirits} (+{amount}).')
             await ctx.respond(f'Successfully claimed daily spirits! You now have {user.spirits} spirits.')
 
+    @slash_command()
+    async def clear(self, ctx: YuzuruContext, amount: int):
+        if not ctx.user.guild_permissions.manage_messages:
+            await ctx.respond('Insufficient permissions')
+            return
+
+        channel = ctx.channel
+        messages = await ctx.channel.history(limit=amount).flatten()
+        await channel.delete_messages(messages)
+        await ctx.respond('Done')
 
 def setup(bot):
     bot.add_cog(Basic(bot))
