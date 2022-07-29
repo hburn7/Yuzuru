@@ -39,16 +39,20 @@ class Basic(commands.Cog):
             logger.info(f'User {user} claimed daily spirits. They now have {user.spirits} (+{amount}).')
             await ctx.respond(f'Successfully claimed daily spirits! You now have {user.spirits} spirits.')
 
-    @slash_command()
+    @slash_command(guild_ids=[931367517564317707])
     async def clear(self, ctx: YuzuruContext, amount: int):
         if not ctx.user.guild_permissions.manage_messages:
             await ctx.respond('Insufficient permissions')
             return
 
-        channel = ctx.channel
-        messages = await ctx.channel.history(limit=amount).flatten()
-        await channel.delete_messages(messages)
-        await ctx.respond('Done')
+        try:
+            channel = ctx.channel
+            messages = await ctx.channel.history(limit=amount).flatten()
+            await channel.delete_messages(messages)
+            await ctx.respond('Done')
+        except e:
+            await ctx.respond(f'Error: {e}')
+
 
 def setup(bot):
     bot.add_cog(Basic(bot))
