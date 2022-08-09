@@ -10,13 +10,7 @@ from typing import List
 from core.text.yuzuru_embed import YuzuruEmbed
 from core.yuzuru_bot import YuzuruContext
 
-
-def get_tags(paste):
-    if '\t' in paste:
-        return [x.strip() for x in paste.split('\t')]
-    else:
-        return [x.strip() for x in paste.split(' ')]
-
+# Custom commands would live here
 
 class Custom(commands.Cog):
     def __init__(self, bot):
