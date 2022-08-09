@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from core.yuzuru_bot import YuzuruContext
 from discord.commands import slash_command
 from discord.ext import commands
+from discord.ext.commands import has_guild_permissions
 
 from database.models.db_models import User
 
@@ -40,11 +41,8 @@ class Basic(commands.Cog):
             await ctx.respond(f'Successfully claimed daily spirits! You now have {user.spirits} spirits.')
 
     @slash_command()
+    @has_guild_permissions(manage_messages=True)
     async def clear(self, ctx: YuzuruContext, amount: int):
-        if not ctx.user.guild_permissions.manage_messages:
-            await ctx.respond('Insufficient permissions')
-            return
-
         try:
             channel = ctx.channel
             messages = await ctx.channel.history(limit=amount).flatten()
@@ -52,7 +50,6 @@ class Basic(commands.Cog):
             await ctx.respond('Done')
         except e:
             await ctx.respond(f'Error: {e}')
-
 
 def setup(bot):
     bot.add_cog(Basic(bot))
