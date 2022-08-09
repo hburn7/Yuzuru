@@ -8,6 +8,7 @@ from pathlib import Path
 from discord import Option
 from discord.commands import slash_command
 from discord.ext import commands
+from discord.ext.commands import check, is_nsfw
 
 from core import config
 from core.text.yuzuru_embed import YuzuruEmbed
@@ -103,11 +104,9 @@ class Anime(commands.Cog):
             await ctx.respond(embed=embed)
 
     @slash_command()
+    @is_nsfw()
     async def nsfw(self, ctx: YuzuruContext, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
         """Sends an NSFW image / gif into the chat (requires NSFW channel)"""
-        if not await ctx.nsfw_check():
-            return
-
         await ctx.nsfw_age_confirm()
 
         if self.nsfw_images:
@@ -123,10 +122,8 @@ class Anime(commands.Cog):
                 await ctx.respond(embed=embed)
     
     @slash_command()
+    @is_nsfw()
     async def genshin(self, ctx: YuzuruContext, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
-        if not await ctx.nsfw_check():
-            return
-
         await ctx.nsfw_age_confirm()
 
         if self.genshin_images:
@@ -139,10 +136,8 @@ class Anime(commands.Cog):
             await ctx.respond('Something went wrong (nothing to send)', ephemeral=True)
 
     @slash_command()
+    @is_nsfw()
     async def lewd(self, ctx: YuzuruContext, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
-        if not await ctx.nsfw_check():
-            return
-
         await ctx.nsfw_age_confirm()
         
         await ctx.defer()
