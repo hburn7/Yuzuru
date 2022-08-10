@@ -56,7 +56,7 @@ class Basic(commands.Cog):
     @has_guild_permissions(manage_emojis=True)
     @bot_has_guild_permissions(manage_emojis=True)
     async def steal(self, ctx: YuzuruContext, emojis: str):
-        """'Steals' all emotes from a message and adds them to the server. Emotes stolen must be from a server where Yuzuru is from."""
+        """'Steals' all emotes from a message and adds them to the server. Bot must share the emote server"""
         emojis = emojis.replace('><', '> <')
         splits = emojis.split(' ')
         added = []
