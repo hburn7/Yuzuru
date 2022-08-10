@@ -17,7 +17,7 @@ class Basic(commands.Cog):
 
     @slash_command()
     async def invite(self, ctx: YuzuruContext):
-        link = 'https://discord.com/oauth2/authorize?client_id=408046042244841474&permissions=1100010866775&scope=bot%20applications.commands'
+        link = 'https://discord.com/api/oauth2/authorize?client_id=408046042244841474&permissions=1496125140054&scope=bot%20applications.commands'
         discord = 'https://discord.gg/GkFR4xGKMM'
         github = 'https://github.com/hburn7/Yuzuru'
         embed = YuzuruEmbed()
