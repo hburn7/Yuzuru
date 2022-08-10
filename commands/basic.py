@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from core.yuzuru_bot import YuzuruContext
 from discord.commands import slash_command
 from discord.ext import commands
-from discord.ext.commands import has_guild_permissions
+from discord.ext.commands import has_guild_permissions, bot_has_guild_permissions
 
 from database.models.db_models import User
 
@@ -42,6 +42,7 @@ class Basic(commands.Cog):
 
     @slash_command()
     @has_guild_permissions(manage_messages=True)
+    @bot_has_guild_permissions(manage_messages=True)
     async def clear(self, ctx: YuzuruContext, amount: int):
         try:
             channel = ctx.channel
@@ -50,6 +51,54 @@ class Basic(commands.Cog):
             await ctx.respond('Done')
         except e:
             await ctx.respond(f'Error: {e}')
+
+    @slash_command()
+    @has_guild_permissions(manage_emojis=True)
+    @bot_has_guild_permissions(manage_emojis=True)
+    async def steal(self, ctx: YuzuruContext, emojis: str):
+        """'Steals' all emotes from a message and adds them to the server"""
+        emojis = emojis.replace('><', '> <')
+        splits = emojis.split(' ')
+        added = []
+
+        for emoji in splits:
+            emoji = emoji.strip()
+            if emoji == '':
+                continue
+
+            # Example: <:argeseal:971495260465287188>
+            try:
+                animated = emoji.startswith('<a:')
+                if animated:
+                    emoji = emoji.replace('<a:', '<:')
+
+                name = emoji.split('<:')[1].split(':')[0]
+                emoji_id = int(emoji.split(':')[-1].split('>')[0])
+                client_emoji = ctx.bot.get_emoji(emoji_id)
+
+                if not client_emoji:
+                    continue
+
+                emoji_bytes = await client_emoji.read()
+                new = await ctx.guild.create_custom_emoji(name=name, image=emoji_bytes, reason='Added via Yuzuru /steal')
+                logger.info(f'Stolen emoji {new.name} and added to guild {ctx.guild}')
+                added.append(new)
+            except Exception as e:
+                logger.warning(f'Failed to steal emoji', exc_info=e)
+            finally:
+                continue
+
+        if added:
+            res = 'Added emotes: '
+            for emoji in added:
+                if emoji.animated:
+                    res += f'<a:{emoji.name}:{emoji.id}>'
+                else:
+                    res += f'<:{emoji.name}:{emoji.id}>'
+            await ctx.respond(res)
+        else:
+            await ctx.respond('Failed to add emotes')
+
 
 def setup(bot):
     bot.add_cog(Basic(bot))
