@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 
-from core.yuzuru_bot import YuzuruContext
+from core.yuzuru_bot import YuzuruContext, YuzuruEmbed
 from discord.commands import slash_command
 from discord.ext import commands
 from discord.ext.commands import has_guild_permissions, bot_has_guild_permissions
@@ -14,6 +14,16 @@ logger = logging.getLogger(__name__)
 class Basic(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @slash_command()
+    async def invite(self, ctx: YuzuruContext):
+        link = 'https://discord.com/oauth2/authorize?client_id=408046042244841474&permissions=1100010866775&scope=bot%20applications.commands'
+        discord = 'https://discord.gg/GkFR4xGKMM'
+        github = 'https://github.com/hburn7/Yuzuru'
+        embed = YuzuruEmbed()
+        embed.title = "Yuzuru Invite Links"
+        embed.description = f'Invite Yuzuru: {link}\nDiscord Server: {discord}\nGithub Repository: {github}'
+        await ctx.respond(embed=embed, ephemeral=True)
 
     @slash_command()
     async def ping(self, ctx):
