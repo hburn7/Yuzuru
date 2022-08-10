@@ -26,12 +26,12 @@ class Basic(commands.Cog):
         await ctx.respond(embed=embed, ephemeral=True)
 
     @slash_command()
-    async def ping(self, ctx):
+    async def ping(self, ctx: YuzuruContext):
         """Checks Yuzuru's latency to Discord servers"""
         await ctx.respond(f'🏓 Pong! {ctx.bot.latency * 1000:.2f}ms ')
 
     @slash_command()
-    async def daily(self, ctx):
+    async def daily(self, ctx: YuzuruContext):
         """Claim 500 spirits (24h cooldown)"""
         cooldown_hrs = 24
         amount = 500
