@@ -52,6 +52,15 @@ class Basic(commands.Cog):
         except e:
             await ctx.respond(f'Error: {e}')
 
+    def emote_str(self, added):
+        res = 'Added emotes: '
+        for emoji in added:
+            if emoji.animated:
+                res += f'<a:{emoji.name}:{emoji.id}>'
+            else:
+                res += f'<:{emoji.name}:{emoji.id}>'
+        return res
+
     @slash_command()
     @has_guild_permissions(manage_emojis=True)
     @bot_has_guild_permissions(manage_emojis=True)
@@ -86,17 +95,17 @@ class Basic(commands.Cog):
                 added.append(new)
             except Exception as e:
                 logger.warning(f'Failed to steal emoji', exc_info=e)
+                if ctx.bot.is_ws_ratelimited():
+                    if added:
+                        await ctx.respond(f'We are being rate limited. Process interrupted.')
+                        await ctx.respond(self.emote_str(added))
+                    else:
+                        await ctx.respond(f'We are being rate limited. Failed to add any emotes.')
             finally:
                 continue
 
         if added:
-            res = 'Added emotes: '
-            for emoji in added:
-                if emoji.animated:
-                    res += f'<a:{emoji.name}:{emoji.id}>'
-                else:
-                    res += f'<:{emoji.name}:{emoji.id}>'
-            await ctx.respond(res)
+            await ctx.respond(self.emote_str(added))
         else:
             await ctx.respond('Failed to add emotes')
 
