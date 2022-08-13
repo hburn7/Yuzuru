@@ -45,7 +45,8 @@ import time
 
 from database import db
 from database.models.db_models import User, CommandHistory, GambleHistory, Log
-from commands import anime, basic, games, custom
+from commands import anime, basic, games, stats
+from commands.custom import osu_tournament_union
 from core import config
 from core.yuzuru_bot import YuzuruBot
 
@@ -74,7 +75,10 @@ def main():
     anime.setup(bot)
     basic.setup(bot)
     games.setup(bot)
-    custom.setup(bot)
+    stats.setup(bot)
+
+    # Custom cogs
+    osu_tournament_union.setup(bot)
 
     try:
         bot.run(config.token)

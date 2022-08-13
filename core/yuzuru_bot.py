@@ -76,7 +76,7 @@ class YuzuruBot(AutoShardedBot):
                             options=context.interaction.data.get('options'),
                             timestamp=datetime.utcnow(), error=True, error_message=exception.args)
         ch.save()
-        logger.info(f'Command error from user {user.user_id} [database id={user.id}] when executing {ch.command}')
+        logger.info(f'Command error from user {user.user_id} [database id={user.id}] when executing {ch.command}: {exception}')
 
     # === TIMERS ===
     @tasks.loop(seconds=600)
