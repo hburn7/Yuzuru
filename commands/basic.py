@@ -1,10 +1,14 @@
 import logging
 from datetime import datetime, timedelta
+from typing import Optional
+
+import discord
+from discord import Option
 
 from core.yuzuru_bot import YuzuruContext, YuzuruEmbed
 from discord.commands import slash_command
 from discord.ext import commands
-from discord.ext.commands import has_guild_permissions, bot_has_guild_permissions
+from discord.ext.commands import has_guild_permissions, bot_has_guild_permissions, guild_only
 
 from database.models.db_models import User
 
@@ -29,6 +33,98 @@ class Basic(commands.Cog):
     async def ping(self, ctx: YuzuruContext):
         """Checks Yuzuru's latency to Discord servers"""
         await ctx.respond(f'🏓 Pong! {ctx.bot.latency * 1000:.2f}ms ')
+
+    @slash_command()
+    @has_guild_permissions(manage_roles=True)
+    @bot_has_guild_permissions(manage_roles=True)
+    async def create_roles(self, ctx: YuzuruContext, roles: str, mentionable: Optional[bool] = True):
+        """Creates one role per comma-separated phrase."""
+        await ctx.defer()
+        separated = roles.split(',')
+        added = []
+        failed = []
+        for name in separated:
+            try:
+                role = await ctx.guild.create_role(name=name.strip(), reason=f'Created via Yuzuru /create_roles (executed by {ctx.user})')
+                added.append(role)
+            except Exception as e:
+                failed.append(name)
+                logger.warning(f'Failed to create role {name} in guild {ctx.guild}')
+
+        embed = YuzuruEmbed()
+        embed.title = 'Create Roles'
+        embed.description = f'**Created Roles:** {[x.mention for x in added]} (Mentionable -> {mentionable})'
+
+        if failed:
+            embed.description += f'\n**Failed to Create Roles:** ' + str(failed)
+            embed.color = discord.Color.red()
+
+        await ctx.respond(embed=embed)
+
+    @slash_command()
+    @has_guild_permissions(manage_roles=True)
+    @bot_has_guild_permissions(manage_roles=True)
+    async def delete_roles(self, ctx: YuzuruContext, *roles):
+        """Deletes all roles listed"""
+        await ctx.defer()
+        deleted = []
+        error = []
+        for role in roles:
+            if not isinstance(role, discord.Role):
+                error.append((role, f'{role} is not a role.'))
+                continue
+
+            try:
+                await role.delete(reason=f'Yuzuru /delete_roles (invoked by {ctx.user})')
+                deleted.append(role.name)
+            except Exception as e:
+                error.append((role, e))
+
+        embed = YuzuruEmbed()
+        embed.title = 'Delete Roles'
+        embed.description = f'**Deleted Roles:** {deleted}'
+
+        if error:
+            embed.description += f'\n**Failed to Delete Roles:** ' + str([f'{x} -> {y}' for x, y in error])
+            embed.color = discord.Color.red()
+
+        await ctx.respond(embed=embed)
+
+    @slash_command()
+    @has_guild_permissions(manage_roles=True)
+    @bot_has_guild_permissions(manage_roles=True)
+    async def cleanup_roles(self, ctx: YuzuruContext):
+        """Deletes ALL roles that are not being used by any users"""
+        roles = filter(lambda r: not r.members, ctx.guild.roles)
+
+        await ctx.defer()
+
+        deleted = []
+        failed = []
+        for role in roles:
+            if not role.members:
+                try:
+                    await role.delete(reason=f'Yuzuru /cleanup_roles executed by {ctx.user}')
+                    deleted.append(role.name)
+                    logger.debug(f'Deleted role {role} from guild {ctx.guild} (cleanup_roles)')
+                except Exception as e:
+                    logger.debug(f'Failed to delete role {e} from guild {ctx.guild} during cleanup_roles execution',
+                                 exc_info=e)
+                    failed.append(role.name)
+
+        embed = YuzuruEmbed()
+        embed.title = 'Role Cleanup'
+
+        if deleted:
+            embed.description = f'**Deleted Roles:** {deleted}'
+
+        if failed:
+            embed.description += f'\n**Failed to Delete:** {failed}'
+
+        if not deleted and not failed:
+            embed.description = f'There are no roles to be deleted.'
+
+        await ctx.respond(embed=embed)
 
     @slash_command()
     async def daily(self, ctx: YuzuruContext):
@@ -59,7 +155,7 @@ class Basic(commands.Cog):
             messages = await ctx.channel.history(limit=amount).flatten()
             await channel.delete_messages(messages)
             await ctx.respond('Done')
-        except e:
+        except Exception as e:
             await ctx.respond(f'Error: {e}')
 
     def emote_str(self, added):
