@@ -3,11 +3,15 @@ version: '3'
 volumes:
   postgres-yuzuru:
     driver: local
+  images:
+    driver: local
 
 services:
   bot:
     image: yuzuru_bot:latest
     build: .
+    volumes:
+    - images:/images
   db:
     image: postgres
     ports:
