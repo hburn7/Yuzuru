@@ -10,7 +10,7 @@ from discord.commands import slash_command
 from discord.ext import commands
 from discord.ext.commands import has_guild_permissions, bot_has_guild_permissions, guild_only
 
-from database.models.db_models import User
+from database.models.db_models import User, Log
 
 logger = logging.getLogger(__name__)
 
@@ -214,6 +214,27 @@ class Basic(commands.Cog):
             await ctx.respond(self.emote_str(added))
         else:
             await ctx.respond('Failed to add emotes')
+
+    @slash_command(guild_ids=[931367517564317707])
+    async def fix_db(self, ctx: YuzuruContext):
+        if ctx.user.id != 146092837723832320:
+            await ctx.respond('Insufficient permissions')
+
+        logs = Log.select()
+        static_time: datetime = datetime.min
+        counter_time = datetime.min
+        counter = 0
+        for log in logs:
+            if static_time != log.timestamp:
+                static_time = log.timestamp
+                counter_time = log.timestamp
+                counter = 0
+            else:
+                counter += 1
+                log.timestamp = static_time + timedelta(minutes=5 * counter)
+                log.save()
+
+        logger.info('Completed')
 
 
 def setup(bot):
