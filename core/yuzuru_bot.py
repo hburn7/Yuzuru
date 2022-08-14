@@ -89,7 +89,7 @@ class YuzuruBot(AutoShardedBot):
         users = users.id if users is not None else 0
         commands = commands.id if commands is not None else 0
 
-        log = Log(guilds=guilds, users=users, commands=commands)
+        log = Log(guilds=guilds, users=users, commands=commands, timestamp=datetime.utcnow())
         log.save()
         logger.info(f'Status logged: {log}')
 
