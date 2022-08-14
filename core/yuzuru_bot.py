@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
 
-import discord
 from discord import ApplicationContext, DiscordException
 from discord.ext import tasks
 from discord.ext.commands import AutoShardedBot
