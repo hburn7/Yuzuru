@@ -31,6 +31,7 @@ def setup_logger():
     # Suppress library debug logs
     logging.getLogger('discord.client').setLevel(logging.INFO)
     logging.getLogger('discord.gateway').setLevel(logging.INFO)
+    logging.getLogger('matplotlib').setLevel(logging.INFO)
 
     if not core.config.debug:
         logging.getLogger('discord').setLevel(logging.INFO)
