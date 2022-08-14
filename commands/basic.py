@@ -215,27 +215,6 @@ class Basic(commands.Cog):
         else:
             await ctx.respond('Failed to add emotes')
 
-    @slash_command(guild_ids=[931367517564317707])
-    async def fix_db(self, ctx: YuzuruContext):
-        if ctx.user.id != 146092837723832320:
-            await ctx.respond('Insufficient permissions')
-
-        logs = Log.select()
-        static_time: datetime = datetime.min
-        counter_time = datetime.min
-        counter = 0
-        for log in logs:
-            if static_time != log.timestamp:
-                static_time = log.timestamp
-                counter_time = log.timestamp
-                counter = 0
-            else:
-                counter += 1
-                log.timestamp = static_time + timedelta(minutes=5 * counter)
-                log.save()
-
-        logger.info('Completed')
-
 
 def setup(bot):
     bot.add_cog(Basic(bot))
