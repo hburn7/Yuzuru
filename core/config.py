@@ -15,6 +15,7 @@ class Config:
     postgres_port: int
     postgres_database: str
     docker: bool
+    debug: bool
 
     neko_dir: str
     lewd_dir: str
@@ -34,7 +35,7 @@ def path_valid(p):
 def get_or_create_config():
     config_path = Path('./config.ini')
 
-    logger.debug(f'Searching for config file at {config_path.absolute()}...')
+    logger.info(f'Searching for config file at {config_path.absolute()}...')
 
     config = ConfigParser()
 
@@ -42,7 +43,7 @@ def get_or_create_config():
     data_key = "DATA"
 
     if not config_path.exists():
-        logger.debug('Config file not found, creating...')
+        logger.info('Config file not found, creating...')
         # Create and return default
         config[bot_key] = {
             "token": "YOUR_TOKEN_HERE",
@@ -51,7 +52,8 @@ def get_or_create_config():
             "postgres_host": "localhost",
             "postgres_port": 5500,
             "postgres_database": "yuzuru",
-            "docker": False
+            "docker": False,
+            "debug": False
         }
         config[data_key] = {
             "neko_dir": "",
@@ -62,10 +64,10 @@ def get_or_create_config():
 
         with open(config_path.absolute(), 'w') as conf:
             config.write(conf)
-        logger.debug(f'Successfully created new config file at {config_path.absolute()}.')
+        logger.info(f'Successfully created new config file at {config_path.absolute()}.')
 
     # Return existing / newly created log
-    logger.debug(f'Configuration file found.')
+    logger.info(f'Configuration file found.')
     config.read(config_path.absolute())
     bot_data = config[bot_key]
     data_data = config[data_key]
@@ -82,6 +84,6 @@ def get_or_create_config():
 
     return Config(bot_data["token"], bot_data["postgres_username"], bot_data["postgres_pass"],
                   bot_data["postgres_host"], int(bot_data["postgres_port"]), bot_data["postgres_database"],
-                  bot_data["docker"] == "True", neko_dir=neko_path, lewd_dir=lewd_path, nsfw_dir=nsfw_path,
-                  genshin_dir=genshin_path, has_neko_dir=has_neko_dir, has_lewd_dir=has_lewd_dir,
+                  bot_data["docker"] == "True", bot_data["debug"] == "True", neko_dir=neko_path, lewd_dir=lewd_path,
+                  nsfw_dir=nsfw_path, genshin_dir=genshin_path, has_neko_dir=has_neko_dir, has_lewd_dir=has_lewd_dir,
                   has_nsfw_dir=has_nsfw_dir, has_genshin_dir=has_genshin_dir)

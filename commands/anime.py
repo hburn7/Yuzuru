@@ -79,12 +79,12 @@ class Anime(commands.Cog):
             self.genshin_images = load_paths_from_source(config.genshin_dir)
 
     @slash_command()
-    async def owoify(self, ctx, text: str):
+    async def owoify(self, ctx: YuzuruContext, text: str):
         """OwO-ify's your text"""
         await ctx.respond(nekos.owoify(text))
 
     @slash_command()
-    async def gif(self, ctx: discord.ApplicationContext,
+    async def gif(self, ctx: YuzuruContext,
                   action: Option(str, "Pick an action!", autocomplete=get_sfw_endpoints),
                   user: Option(discord.User, "Target someone with your message.", required=False)):
         """Sends a gif into chat based on the selected action"""
@@ -149,7 +149,7 @@ class Anime(commands.Cog):
             await ctx.respond(f'Whoops! Something went wrong. (No lewds)', ephemeral=True)
 
     @slash_command()
-    async def neko(self, ctx, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
+    async def neko(self, ctx: YuzuruContext, num: Option(int, "Number of images to send en masse.", min_value=1, max_value=25, default=1)):
         """Sends a picture of a cute cat into chat"""
         if self.neko_images:
             for i in range(num):

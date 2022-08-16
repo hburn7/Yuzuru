@@ -1,6 +1,7 @@
 import logging
 import logging.config
 import datetime
+import core
 
 from pathlib import Path
 
@@ -27,6 +28,15 @@ def setup_logger():
     console.setFormatter(LogFormatter())
     logging.getLogger('').addHandler(console)
 
+    # Suppress library debug logs
+    logging.getLogger('discord.client').setLevel(logging.INFO)
+    logging.getLogger('discord.gateway').setLevel(logging.INFO)
+    logging.getLogger('matplotlib').setLevel(logging.INFO)
+
+    if not core.config.debug:
+        logging.getLogger('discord').setLevel(logging.INFO)
+        logging.getLogger('peewee').setLevel(logging.INFO)
+
 
 setup_logger()
 
@@ -36,26 +46,27 @@ import time
 
 from database import db
 from database.models.db_models import User, CommandHistory, GambleHistory, Log
-from commands import anime, basic, games, custom
+from commands import anime, basic, games, stats
+from commands.custom import osu_tournament_union
 from core import config
 from core.yuzuru_bot import YuzuruBot
 
-logger = logging.getLogger('main')
-logger.debug("Logger initialized.")
+logger = logging.getLogger(__name__)
+logger.info("Logger initialized.")
 
 
 def main():
     # Init DB -- reconnect on failure
     while True:
-        logger.debug(f'Attempting database connection...')
+        logger.info(f'Attempting database connection...')
         try:
             db.connect()
-            logger.debug(f'Connected to database!')
+            logger.info(f'Connected to database!')
             db.create_tables([User, CommandHistory, GambleHistory, Log])
             break
         except Exception as e:
             logger.critical(f'Failed to establish a database connection. Retrying...')
-            logger.debug(f'Exception info: {e}')
+            logger.info(f'Exception info: {e}')
             time.sleep(2)
 
     # Configure bot
@@ -65,7 +76,10 @@ def main():
     anime.setup(bot)
     basic.setup(bot)
     games.setup(bot)
-    custom.setup(bot)
+    stats.setup(bot)
+
+    # Custom cogs
+    osu_tournament_union.setup(bot)
 
     try:
         bot.run(config.token)

@@ -1,8 +1,7 @@
 import logging
 from datetime import datetime
 
-import discord
-from discord import ApplicationContext
+from discord import ApplicationContext, DiscordException
 from discord.ext import tasks
 from discord.ext.commands import AutoShardedBot
 
@@ -57,19 +56,26 @@ class YuzuruBot(AutoShardedBot):
     async def on_ready(self):
         logger.info("Welcome to Yuzuru!")
 
-    async def on_interaction(self, interaction: discord.Interaction):
-        options = interaction.data.get('options')
-        if options is not None:
-            if 'focused' not in options[0].keys():
-                user, created = User.get_or_create(user_id=interaction.user.id)
-                user.command_count += 1
-                user.save()
+    async def on_application_command_completion(self, context: YuzuruContext):
+        # Update user command count
+        user, created = User.get_or_create(user_id=context.user.id)
+        user.command_count += 1
+        user.save()
 
-                ch = CommandHistory(user=user, command=interaction.data.get('name'),
-                                    options=interaction.data.get('options'),
-                                    timestamp=datetime.utcnow())
-                ch.save()
-        await super().on_interaction(interaction)
+        # Add command history and log
+        ch = CommandHistory(user=user, command=context.command.name,
+                            options=context.interaction.data.get('options'),
+                            timestamp=datetime.utcnow(), error=False, error_message=None)
+        ch.save()
+        logger.info(f'{repr(ch)} -- User {user.id} has now used {user.command_count} commands')
+
+    async def on_application_command_error(self, context: YuzuruContext, exception: DiscordException):
+        user, created = User.get_or_create(user_id=context.user.id)
+        ch = CommandHistory(user=user, command=context.command.name,
+                            options=context.interaction.data.get('options'),
+                            timestamp=datetime.utcnow(), error=True, error_message=exception.args)
+        ch.save()
+        logger.info(f'Command error from user {user.user_id} [database id={user.id}] when executing {ch.command}: {exception}')
 
     # === TIMERS ===
     @tasks.loop(seconds=600)
@@ -83,7 +89,7 @@ class YuzuruBot(AutoShardedBot):
         users = users.id if users is not None else 0
         commands = commands.id if commands is not None else 0
 
-        log = Log(guilds=guilds, users=users, commands=commands)
+        log = Log(guilds=guilds, users=users, commands=commands, timestamp=datetime.utcnow())
         log.save()
         logger.info(f'Status logged: {log}')
 

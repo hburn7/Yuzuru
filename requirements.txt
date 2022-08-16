@@ -30,3 +30,6 @@ six==1.16.0
 tqdm==4.62.3
 urllib3==1.26.8
 yarl==1.7.2
+
+matplotlib~=3.5.3
+pandas~=1.4.3

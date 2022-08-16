@@ -10,14 +10,17 @@ from typing import List
 from core.text.yuzuru_embed import YuzuruEmbed
 from core.yuzuru_bot import YuzuruContext
 
-# Custom commands would live here
 
-class Custom(commands.Cog):
+guild_id = 1006209366753546301
+
+
+class OsuTournamentUnion(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Server-specific commands live here
+    # @slash_command(guild_ids=[guild_id])
+    # async def foo(self, ctx: YuzuruContext):
+    #     pass
 
 def setup(bot):
-    bot.add_cog(Custom(bot))
-    # bot.add_command(Custom.stt3_verify)
+    bot.add_cog(OsuTournamentUnion(bot))
