@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+import discord
 from discord import ApplicationContext, DiscordException
 from discord.ext import tasks
 from discord.ext.commands import AutoShardedBot
@@ -76,6 +77,17 @@ class YuzuruBot(AutoShardedBot):
                             timestamp=datetime.utcnow(), error=True, error_message=exception.args)
         ch.save()
         logger.info(f'Command error from user {user.user_id} [database id={user.id}] when executing {ch.command}: {exception}')
+
+    # 5WC Specific
+    async def on_member_join(self, member: discord.User):
+        if member.guild.id == 999513842872766514:
+            channel = self.get_channel(999514169764229200)  # 5WC #welcome chat
+            await channel.send(f'👋 **{member}** has joined.')
+
+    async def on_member_remove(self, member: discord.User):
+        if member.guild.id == 999513842872766514:
+            channel = self.get_channel(999514169764229200)  # 5WC #welcome chat
+            await channel.send(f'🚶 **{member}** has left.')
 
     # === TIMERS ===
     @tasks.loop(seconds=600)
