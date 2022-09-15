@@ -82,12 +82,12 @@ class YuzuruBot(AutoShardedBot):
     async def on_member_join(self, member: discord.User):
         if member.guild.id == 999513842872766514:
             channel = self.get_channel(999514169764229200)  # 5WC #welcome chat
-            await channel.send(f'👋 **{member}** has joined.')
+            await channel.send(f'👋 **{member.mention}** has joined.')
 
     async def on_member_remove(self, member: discord.User):
         if member.guild.id == 999513842872766514:
             channel = self.get_channel(999514169764229200)  # 5WC #welcome chat
-            await channel.send(f'🚶 **{member}** has left.')
+            await channel.send(f'🚶 **{member.mention}** has left.')
 
     # === TIMERS ===
     @tasks.loop(seconds=600)
