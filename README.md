@@ -39,6 +39,7 @@ docker = False
 neko_dir = 
 lewd_dir = 
 nsfw_dir = 
+genshin_dir = 
 ```
 
 Ensure the `config.ini` file has accurate information. The postgres username and password values are arbitrary - Docker handles everything. What's important is that the `docker-compose.yml` file has the same credentials, more on this later.
