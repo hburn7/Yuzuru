@@ -34,6 +34,7 @@ postgres_host = localhost
 postgres_port = 5500
 postgres_database = yuzuru
 docker = False
+debug = True
 
 [DATA]
 neko_dir = 
